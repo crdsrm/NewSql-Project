@@ -1,10 +1,12 @@
 import java.net.*;
 import java.io.*;
+import org.json.JSONObject;
+import org.json.JSONException;
 
 public class VoltDBOpsServer extends Thread
 {
    private ServerSocket serverSocket;
-   
+
    public VoltDBOpsServer(int port) throws IOException
    {
       serverSocket = new ServerSocket(port);
@@ -15,6 +17,7 @@ public class VoltDBOpsServer extends Thread
    {
       while(true)
       {
+        String data = "";
          try
          {
             System.out.println("Waiting for client on port " +
@@ -25,11 +28,24 @@ public class VoltDBOpsServer extends Thread
             DataInputStream in =
                   new DataInputStream(server.getInputStream());
 
-	    while(!(data=in.readUTF).equals("Exit")){
-		            System.out.println(data);		
+	    while(!(data=in.readUTF()).equals("Exit")){
+                try{
+                JSONObject js = new JSONObject(data);
+
+		            System.out.println(js.get("id"));
+                System.out.println(js.get("name"));
+                System.out.println(js.get("balance"));
+                System.out.println(js.get("num"));
+                System.out.println(js.get("is_vip"));
+
+              }catch(JSONException e)
+              {
+                e.printStackTrace();
+              }
+
 			    System.out.println("\n");
 		}
-       
+
             //server.close();
          }catch(IOException e)
          {
