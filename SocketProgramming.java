@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package socketprogramming;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -34,7 +33,7 @@ public class SocketProgramming {
         try {
             Socket client = new Socket(serverName, port);
 
-            //for(int i=0;i<5;i++){ 
+            //for(int i=0;i<5;i++){
             OutputStream outToServer = client.getOutputStream();
             DataOutputStream out = new DataOutputStream(outToServer);
             InputStream inFromServer = client.getInputStream();
@@ -43,8 +42,37 @@ public class SocketProgramming {
             System.out.println("Connecting to " + serverName + " on port " + port);
 
             System.out.println("Just connected to " + client.getRemoteSocketAddress());
+            String data = "";
 
-            for(int i=1;i<=1000000000;i++) {
+
+
+
+            while(true){
+            try{
+              if(!(data=in.readUTF()).equals("EXIT")){
+
+                System.out.println("Read data"+data);
+
+                PhoneCallGenerator phonecallGenerator = new PhoneCallGenerator(6);
+                JSONObject obj = new JSONObject();
+                PhoneCallGenerator.PhoneCall call = phonecallGenerator.receive();
+                obj.put("PhoneNumber",call.phoneNumber);
+                obj.put("ContestantNumber",call.contestantNumber);
+                out.writeUTF(obj.toString());
+              }
+              else{
+                client.close();
+              }
+
+
+            }catch(JSONException ex){
+              ex.printStackTrace();
+            }
+          }
+
+
+
+            /*for(int i=1;i<=1000000000;i++) {
             JSONObject obj = new JSONObject();
 
             try {
@@ -56,18 +84,18 @@ public class SocketProgramming {
 
             } catch (JSONException ex) {
                 Logger.getLogger(SocketProgramming.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            }*/
             //System.out.print(obj)
-            out.writeUTF(obj.toString());
-            }
-            out.writeUTF("Exit");
+
+
+            //out.writeUTF("Exit");
             //System.out.println("Server says " + in.readUTF());
             //Thread.sleep(3000);
             //}
-            client.close();
+            //client.close();
         } catch (IOException e) {
             e.printStackTrace();
-        } 
+        }
     }
 
 }
